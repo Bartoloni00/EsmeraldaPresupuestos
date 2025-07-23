@@ -1,8 +1,5 @@
-import express from 'express';
+import { app, port } from './app.js';
 
-const app = express();
-app.use(express.json());
-
-app.get('/', (_, res) => res.send('API funcionando'));
-
-app.listen(3000, () => console.log('Servidor en puerto 3000'));
+app.listen(port, ()=>{
+    console.log(`The API is running`);
+})
