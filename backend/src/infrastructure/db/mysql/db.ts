@@ -5,7 +5,7 @@ const config = {
   user: 'root',
   port: 3306,
   password: '',
-  database: 'beersapidb'
+  database: 'esmeraldapresupuestos',
 };
 
 let connection: mysql.Connection;
@@ -14,4 +14,4 @@ let connection: mysql.Connection;
   connection = await mysql.createConnection(config);
 })();
 
-export { connection };
+export { connection as DB };

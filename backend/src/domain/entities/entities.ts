@@ -57,3 +57,10 @@ export interface PackagingReceta {
   packaging_id: number;
   cantidad?: number;
 }
+
+export interface PackagingWithPrecioAndProveedor extends Packaging {
+  precios: {
+    precio: PrecioPackaging['precio'];
+    proveedor_name: Proveedor['name'];
+  }[];
+}

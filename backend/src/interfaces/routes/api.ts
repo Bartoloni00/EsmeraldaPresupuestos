@@ -4,6 +4,8 @@ import IngredientesController from '../controllers/Ingredientes'
 import RecetasController from '../controllers/Recetas'
 import ProveedoresController from '../controllers/Proveedores'
 import PackagingController from '../controllers/Packaging'
+import { ListPackagings } from '../../application/usecases/packagings/ListPackagings';
+import { MySQLPackagingRepository } from '../../infrastructure/repositories/SqlPackagingRepository'
 
 const routes = express.Router()
 
@@ -33,11 +35,16 @@ routes.put(namespaceProveedores + '/:id',ProveedoresController.update)
 routes.delete(namespaceProveedores + '/:id',ProveedoresController.delete)
 
 let namespacePackaging = namespace + '/packaging'
-routes.get(namespacePackaging,PackagingController.getAll)
-routes.get(namespacePackaging  + '/:id',PackagingController.getById)
-routes.post(namespacePackaging,PackagingController.create)
-routes.put(namespacePackaging + '/:id',PackagingController.update)
-routes.delete(namespacePackaging + '/:id',PackagingController.delete)
+
+const packagingRepository = new MySQLPackagingRepository();
+const listPackagings = new ListPackagings(packagingRepository);
+const packagingController = new PackagingController(listPackagings);
+
+routes.get(namespacePackaging,packagingController.getAll.bind(packagingController))
+routes.get(namespacePackaging  + '/:id',packagingController.getById.bind(packagingController))
+routes.post(namespacePackaging,packagingController.create)
+routes.put(namespacePackaging + '/:id',packagingController.update)
+routes.delete(namespacePackaging + '/:id',packagingController.delete)
 
 
 export default routes
