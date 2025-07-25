@@ -1,31 +1,39 @@
 import { Request, Response } from 'express';
 import Result from "../../domain/services/ResultsPattern"
 import { httpStatusCodes as code } from "../../domain/services/httpStatusCodes"
+import { ListProveedores } from '../../application/usecases/proveedores/ListProveedores';
 
 export default class ProveedoresController
 {
-    static async getAll(_req: Request, res: Response): Promise<void>
+    constructor(private listProveedores: ListProveedores) {}
+
+    async getAll(_req: Request, res: Response): Promise<void>
     {
-        const result = new Result(true, code.OK, 'proveedores')
+        const proveedores = await this.listProveedores.execute()
+        const result = new Result(true, proveedores)
         res.status(code.OK).json(result)
     }
-    static async getById(_req: Request, res: Response): Promise<void>
+    async getById(_req: Request, res: Response): Promise<void>
     {
-        const result = new Result(true, code.OK, 'proveedores id')
-        res.status(code.OK).json(result)
+        const proveedor = await this.listProveedores.execute(parseInt(_req.params.id))
+        if (!Array.isArray(proveedor) || proveedor.length < 1) {
+            res.status(code.NOT_FOUND).json(new Result(false, 'proveedor no encontrado.'))
+            return
+        }
+        res.status(code.OK).json(new Result(true, proveedor))
     }
 
-    static async create(_req: Request, res: Response): Promise<void>
+    async create(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'proveedores crear')
         res.status(code.OK).json(result)
     }
-    static async update(_req: Request, res: Response): Promise<void>
+    async update(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'proveedores actualizar')
         res.status(code.OK).json(result)
     }
-    static async delete(_req: Request, res: Response): Promise<void>
+    async delete(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'proveedores eliminar')
         res.status(code.OK).json(result)

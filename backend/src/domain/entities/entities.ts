@@ -37,6 +37,13 @@ export interface PrecioIngrediente {
   created_at: Date;
 }
 
+export interface IngredienteWithPrecioAndProveedor extends Ingrediente {
+  precios: {
+    precio: PrecioIngrediente['precio'];
+    proveedor_name: Proveedor['name'];
+  }[];
+}
+
 export interface PrecioPackaging {
   packaging_id: number;
   proveedor_id: number;

@@ -1,31 +1,38 @@
 import { Request, Response } from 'express';
 import Result from "../../domain/services/ResultsPattern"
 import { httpStatusCodes as code } from "../../domain/services/httpStatusCodes"
+import { ListRecetas } from "../../application/usecases/recetas/ListRecetas";
 
 export default class RecetasController
 {
-    static async getAll(_req: Request, res: Response): Promise<void>
+    constructor(private listRecetas: ListRecetas) {}
+
+    async getAll(_req: Request, res: Response): Promise<void>
     {
-        const result = new Result(true, code.OK, 'recetas')
-        res.status(code.OK).json(result)
+        const recetas = await this.listRecetas.execute()
+        res.status(code.OK).json(new Result(true, recetas))
     }
-    static async getById(_req: Request, res: Response): Promise<void>
+    async getById(_req: Request, res: Response): Promise<void>
     {
-        const result = new Result(true, code.OK, 'recetas id')
-        res.status(code.OK).json(result)
+        const receta = await this.listRecetas.execute(parseInt(_req.params.id))
+        if (!Array.isArray(receta) || receta.length < 1) {
+            res.status(code.NOT_FOUND).json(new Result(false, 'receta no encontrado.'))
+            return
+        }
+        res.status(code.OK).json(new Result(true, receta))
     }
 
-    static async create(_req: Request, res: Response): Promise<void>
+    async create(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'recetas crear')
         res.status(code.OK).json(result)
     }
-    static async update(_req: Request, res: Response): Promise<void>
+    async update(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'recetas actualizar')
         res.status(code.OK).json(result)
     }
-    static async delete(_req: Request, res: Response): Promise<void>
+    async delete(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'recetas eliminar')
         res.status(code.OK).json(result)

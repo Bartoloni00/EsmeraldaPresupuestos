@@ -119,3 +119,49 @@ INSERT INTO ingrediente_receta (receta_id, ingrediente_id, cantidad_kg) VALUES
 INSERT INTO packaging_receta (receta_id, packaging_id, cantidad) VALUES 
 (1, 1, 1),
 (1, 2, 1);
+
+-- Nuevos ingredientes
+INSERT INTO ingrediente (name, descripcion) VALUES 
+('Harina leudante', 'Harina con polvo de hornear incorporado'),
+('Huevo', 'Huevo de gallina'),
+('Aceite de girasol', 'Aceite vegetal refinado'),
+('Esencia de vainilla', 'Extracto artificial de vainilla'),
+('Queso crema', 'Queso untable tipo americano'),
+('Azúcar impalpable', 'Azúcar en polvo');
+
+-- Nuevos packaging
+INSERT INTO packaging (title, descripcion) VALUES 
+('Pirotines x12', 'Papel para cupcakes color pastel'),
+('Caja para cupcakes', 'Caja de cartón con separadores');
+
+-- Nueva receta
+INSERT INTO receta (title, descripcion) VALUES 
+('Cupcakes de Vainilla', 'Masa esponjosa sabor vainilla con frosting de queso crema');
+
+-- Precios ingredientes (Proveedor A y B)
+INSERT INTO precio_ingrediente (proveedor_id, ingrediente_id, precio) VALUES 
+(1, 3, 850.00),  -- Harina leudante
+(1, 4, 1500.00), -- Huevo
+(1, 5, 1200.00), -- Aceite de girasol
+(2, 6, 450.00),  -- Esencia de vainilla
+(2, 7, 2800.00), -- Queso crema
+(2, 8, 900.00);  -- Azúcar impalpable
+
+-- Precios packaging
+INSERT INTO precio_packaging (packaging_id, proveedor_id, precio) VALUES 
+(3, 2, 90.00),  -- Pirotines
+(4, 1, 130.00); -- Caja para cupcakes
+
+-- Ingredientes para receta Cupcakes (id receta = 2)
+INSERT INTO ingrediente_receta (receta_id, ingrediente_id, cantidad_kg) VALUES 
+(2, 3, 0.250), -- Harina leudante
+(2, 4, 0.250), -- Huevo (~5 huevos)
+(2, 5, 0.100), -- Aceite de girasol
+(2, 6, 0.005), -- Esencia de vainilla
+(2, 7, 0.150), -- Queso crema
+(2, 8, 0.150); -- Azúcar impalpable
+
+-- Packaging para receta
+INSERT INTO packaging_receta (receta_id, packaging_id, cantidad) VALUES 
+(2, 3, 1), -- Pirotines x12
+(2, 4, 1); -- Caja para cupcakes

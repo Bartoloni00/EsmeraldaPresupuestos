@@ -2,9 +2,9 @@ import mysql from 'mysql2/promise';
 
 const config = {
   host: 'localhost',
-  user: 'root',
+  user: 'abraham',
   port: 3306,
-  password: '',
+  password: '123',
   database: 'esmeraldapresupuestos',
 };
 
