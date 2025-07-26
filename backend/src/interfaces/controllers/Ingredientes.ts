@@ -26,17 +26,17 @@ export default class IngredientesController
         res.status(code.OK).json(new Result(true, ingrediente));
     }
 
-    static async create(_req: Request, res: Response): Promise<void>
+    async create(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'ingredientes')
         res.status(code.OK).json(result)
     }
-    static async update(_req: Request, res: Response): Promise<void>
+    async update(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'ingredientes')
         res.status(code.OK).json(result)
     }
-    static async delete(_req: Request, res: Response): Promise<void>
+    async delete(_req: Request, res: Response): Promise<void>
     {
         const result = new Result(true, code.OK, 'ingredientes')
         res.status(code.OK).json(result)
