@@ -80,4 +80,36 @@ export class MySQLRecetaRepository implements RecetaRepository
         const [rows]: [ResultSetHeader, any] = await DB.query(`INSERT INTO packaging_receta SET ?`, data);
         return rows;
     }
+
+    async deleteIngredienteRelation(receta_id: number, ingrediente_id: number): Promise<void> {
+        await DB.query(`DELETE FROM ingrediente_receta WHERE receta_id = ? AND ingrediente_id = ?`, [receta_id, ingrediente_id]);
+        return;
+    }
+
+    async deletePackagingRelation(receta_id: number, packaging_id: number): Promise<void> {
+        await DB.query(`DELETE FROM packaging_receta WHERE receta_id = ? AND packaging_id = ?`, [receta_id, packaging_id]);
+        return;
+    }
+
+    async updateReceta(receta_id: number, data: object): Promise<void> {
+        await DB.query(`UPDATE receta SET ? WHERE id = ?`, [data, receta_id]);
+        return;
+    }
+
+    async updateIngredienteRelation(receta_id: number, ingrediente_id: number, cantidad_kg: number): Promise<void> {
+        await DB.query(`UPDATE ingrediente_receta SET cantidad_kg = ? WHERE receta_id = ? AND ingrediente_id = ?`, [cantidad_kg, receta_id, ingrediente_id]);
+        return;
+    }
+
+    async updatePackagingRelation(receta_id: number, packaging_id: number, cantidad: number): Promise<void> {
+        await DB.query(`UPDATE packaging_receta SET cantidad = ? WHERE receta_id = ? AND packaging_id = ?`, [cantidad, receta_id, packaging_id]);
+        return;
+    }
+
+    async deleteReceta(receta_id: number): Promise<void> {
+        await DB.query(`DELETE FROM ingrediente_receta WHERE receta_id = ?`, [receta_id]);
+        await DB.query(`DELETE FROM packaging_receta WHERE receta_id = ?`, [receta_id]);
+        await DB.query(`DELETE FROM receta WHERE id = ?`, [receta_id]);
+        return;
+    }
 }

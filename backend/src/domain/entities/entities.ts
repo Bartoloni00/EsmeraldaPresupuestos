@@ -97,7 +97,24 @@ export interface CreateRecetaPackaging {
 
 export interface CreateRecetaData {
     title: string;
-    descripcion?: string; // Es opcional según tu JSON de ejemplo
+    descripcion?: string;
     ingredientes: CreateRecetaIngrediente[];
     packagings: CreateRecetaPackaging[];
+}
+
+export interface UpdateRecetaIngrediente {
+    ingrediente_id: number;
+    cantidad_kg: number;
+}
+
+export interface UpdateRecetaPackaging {
+    packaging_id: number;
+    cantidad: number;
+}
+
+export interface UpdateRecetaData {
+    title?: string;
+    descripcion?: string;
+    ingredientes?: UpdateRecetaIngrediente[];
+    packagings?: UpdateRecetaPackaging[];
 }
