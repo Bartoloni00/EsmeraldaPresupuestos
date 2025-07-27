@@ -22,7 +22,8 @@ import { IngredienteRepository } from '../../../domain/repositories/IngredienteR
         } else {
           result.push({
             id: row.id,
-            name: row.title,
+            name: row.name,
+            descripcion: row.descripcion,
             precios: [priceEntry]
           });
         }

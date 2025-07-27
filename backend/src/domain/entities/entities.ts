@@ -71,3 +71,33 @@ export interface PackagingWithPrecioAndProveedor extends Packaging {
     proveedor_name: Proveedor['name'];
   }[];
 }
+
+export interface RecetaWithIngredientesAndPackagings extends Receta {
+  ingredientes: IngredienteWithPrecioAndProveedor[];
+  packagings: PackagingWithPrecioAndProveedor[];
+}
+
+export interface IngredienteRecetaDetalle extends IngredienteWithPrecioAndProveedor {
+    cantidad_kg: number;
+}
+
+export interface PackagingRecetaDetalle extends PackagingWithPrecioAndProveedor {
+    cantidad: number;
+}
+
+export interface CreateRecetaIngrediente {
+    ingrediente_id: number;
+    cantidad_kg: number;
+}
+
+export interface CreateRecetaPackaging {
+    packaging_id: number;
+    cantidad: number;
+}
+
+export interface CreateRecetaData {
+    title: string;
+    descripcion?: string; // Es opcional según tu JSON de ejemplo
+    ingredientes: CreateRecetaIngrediente[];
+    packagings: CreateRecetaPackaging[];
+}

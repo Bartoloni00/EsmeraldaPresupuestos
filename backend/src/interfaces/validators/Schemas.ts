@@ -1,4 +1,4 @@
-import { z, ZodError } from 'zod';
+import { z } from 'zod';
 
 export const ProveedorSchema = z.object({
     name: z.string('El nombre debe ser una cadena de caracteres.').nonempty('El nombre es obligatorio.'),
@@ -13,16 +13,19 @@ export const ProveedorSchema = z.object({
     numero_calle: z.number().nullable().optional()
 });
 
-export type Proveedor = z.infer<typeof ProveedorSchema>;
+export const IngredienteSchema = z.object({
+    ingrediente_id: z.number(),
+    cantidad_kg: z.number()
+});
 
-type SafeParseResult<T> = 
-  | { success: true; data: T }
-  | { success: false; error: ZodError<T> };
+export const PackagingSchema = z.object({
+    packaging_id: z.number(),
+    cantidad: z.number()
+});
 
-export function validateProveedor(object: unknown): SafeParseResult<Proveedor> {
-    return ProveedorSchema.safeParse(object);
-}
-
-export function validatePartialProveedor(object: unknown): SafeParseResult<Partial<Proveedor>> {
-    return ProveedorSchema.partial().safeParse(object);
-}
+export const RecetaSchema = z.object({
+    title: z.string().nonempty({ message: 'El nombre es obligatorio.' }),
+    descripcion: z.string().nullable().optional(),
+    ingredientes: z.array(IngredienteSchema).nonempty({ message: 'Debe haber al menos un ingrediente.' }),
+    packagings: z.array(PackagingSchema).nonempty({ message: 'Debe haber al menos un packaging.' }),
+});

@@ -23,6 +23,7 @@ import { PackagingRepository } from '../../../domain/repositories/PackagingRepos
           result.push({
             id: row.id,
             title: row.title,
+            descripcion: row.descripcion,
             precios: [priceEntry]
           });
         }

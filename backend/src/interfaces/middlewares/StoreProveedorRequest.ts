@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { httpStatusCodes as code } from "../../domain/services/httpStatusCodes"
-import { validateProveedor, validatePartialProveedor } from "../validators/CreateProveedorSchema"
+import { validateProveedor, validatePartialProveedor } from "../validators/ValidateProveedor"
 import Result from '../../domain/services/ResultsPattern';
 
 export default class StoreRequest

@@ -1,17 +1,38 @@
 import express from 'express'
 import RecetasController from '../controllers/Recetas'
 import { ListRecetas } from '../../application/usecases/recetas/ListRecetas';
+import { CreateReceta } from '../../application/usecases/recetas/CreateReceta';
+//import { UpdateReceta } from '../../application/usecases/recetas/UpdateReceta';
+//import { DeleteReceta } from '../../application/usecases/recetas/DeleteReceta';
 import { MySQLRecetaRepository } from '../../infrastructure/repositories/SqlRecetaRepository'
+import { MySQLIngredienteRepository } from '../../infrastructure/repositories/SqlIngredienteRepository'
+import { MySQLPackagingRepository } from '../../infrastructure/repositories/SqlPackagingRepository'
+import StoreRequest from '../middlewares/StoreRecetaRequest'
+import { ListIngredientes } from '../../application/usecases/ingredientes/ListIngredientes';
+import { ListPackagings } from '../../application/usecases/packagings/ListPackagings';
 
 const RecetaRoutes = express.Router()
 
 const recetaRepository = new MySQLRecetaRepository();
-const listRecetas = new ListRecetas(recetaRepository);
-const recetasController = new RecetasController(listRecetas);
+const ingredienteRepository = new MySQLIngredienteRepository();
+const packagingRepository = new MySQLPackagingRepository();
+
+const listIngredientes = new ListIngredientes(ingredienteRepository);
+const listPackagings = new ListPackagings(packagingRepository);
+const listRecetas = new ListRecetas(recetaRepository, listIngredientes, listPackagings);
+const createReceta = new CreateReceta(recetaRepository);
+//const updateReceta = new UpdateReceta(recetaRepository);
+//const deleteReceta = new DeleteReceta(recetaRepository);
+const recetasController = new RecetasController(listRecetas, createReceta);
 
 RecetaRoutes.get('/',recetasController.getAll.bind(recetasController))
 RecetaRoutes.get('/:id',recetasController.getById.bind(recetasController))
-RecetaRoutes.post('/',recetasController.create.bind(recetasController))
+
+const validateRecetaMiddleware = new StoreRequest(listIngredientes, listPackagings);
+
+RecetaRoutes.post('/',[
+    validateRecetaMiddleware.validate.bind(validateRecetaMiddleware),
+],recetasController.create.bind(recetasController))
 RecetaRoutes.put('/:id',recetasController.update.bind(recetasController))
 RecetaRoutes.delete('/:id',recetasController.delete.bind(recetasController))
 

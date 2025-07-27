@@ -2,10 +2,14 @@ import { Request, Response } from 'express';
 import Result from "../../domain/services/ResultsPattern"
 import { httpStatusCodes as code } from "../../domain/services/httpStatusCodes"
 import { ListRecetas } from "../../application/usecases/recetas/ListRecetas";
+import { CreateReceta } from "../../application/usecases/recetas/CreateReceta";
 
 export default class RecetasController
 {
-    constructor(private listRecetas: ListRecetas) {}
+    constructor(
+        private listRecetas: ListRecetas,
+        private createReceta: CreateReceta
+    ) {}
 
     async getAll(_req: Request, res: Response): Promise<void>
     {
@@ -24,8 +28,15 @@ export default class RecetasController
 
     async create(_req: Request, res: Response): Promise<void>
     {
-        const result = new Result(true, code.OK, 'recetas crear')
-        res.status(code.OK).json(result)
+        const recetaData = _req.body
+        try {
+            await this.createReceta.execute(recetaData)
+            res.status(code.OK).json(new Result(true, {
+                'message': 'Receta con el nombre: ' + recetaData.title + ' creada correctamente.'
+            }))
+        } catch (error) {
+            
+        }
     }
     async update(_req: Request, res: Response): Promise<void>
     {

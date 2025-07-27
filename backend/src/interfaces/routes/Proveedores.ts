@@ -7,7 +7,7 @@ import { DeleteProveedor } from '../../application/usecases/proveedores/DeletePr
 
 import { MySQLProveedorRepository } from '../../infrastructure/repositories/SqlProveedorRepository'
 
-import StoreRequest from '../middlewares/StoreRequest'
+import StoreRequest from '../middlewares/StoreProveedorRequest'
 import existProveedor from '../middlewares/existProveedor'
 
 const ProveedoresRoutes = express.Router()
