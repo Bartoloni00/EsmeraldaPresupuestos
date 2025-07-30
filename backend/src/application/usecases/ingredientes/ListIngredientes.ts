@@ -24,7 +24,7 @@ import { IngredienteRepository } from '../../../domain/repositories/IngredienteR
             id: row.id,
             name: row.name,
             descripcion: row.descripcion,
-            precios: [priceEntry]
+            precios: row.precio !== null ? [priceEntry] : []
           });
         }
       }

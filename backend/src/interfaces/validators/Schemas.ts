@@ -40,3 +40,9 @@ export const CreatePackagingSchema = z.object({
     descripcion: z.string().nullable().optional(),
     precios: z.array(precioSchema).nonempty({ message: 'Debe haber al menos un precio.'}).optional(),
 });
+
+export const CreateIngredienteSchema = z.object({
+    name: z.string().nonempty({ message: 'El nombre es obligatorio.' }),
+    descripcion: z.string().nullable().optional(),
+    precios: z.array(precioSchema).nonempty({ message: 'Debe haber al menos un precio.'}).optional(),
+});
