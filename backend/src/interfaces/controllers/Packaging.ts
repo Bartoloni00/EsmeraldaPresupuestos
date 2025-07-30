@@ -2,16 +2,16 @@ import { Request, Response } from 'express';
 import Result from "../../domain/services/ResultsPattern";
 import { httpStatusCodes as code } from "../../domain/services/httpStatusCodes";
 import { ListPackagings } from '../../application/usecases/packagings/ListPackagings';
+import { CreatePackaging } from '../../application/usecases/packagings/CreatePackaging';
+import { UpdatePackaging } from '../../application/usecases/packagings/UpdatePackaging';
+import { DeletePackaging } from '../../application/usecases/packagings/DeletePackaging';
 
 export default class PackagingController {
     constructor(
         private listPackagings: ListPackagings,
-        /*
-        private getPackagingById: typeof GetPackagingById,
-        private createPackaging: typeof CreatePackaging,
-        private updatePackaging: typeof UpdatePackaging,
-        private deletePackaging: typeof DeletePackaging
-        */
+        private createPackaging: CreatePackaging,
+        private updatePackaging: UpdatePackaging,
+        private deletePackaging: DeletePackaging
     ) {}
 
     async getAll(_req: Request, res: Response): Promise<void> {
@@ -34,17 +34,48 @@ export default class PackagingController {
     }
 
     async create(_req: Request, res: Response): Promise<void> {
-        const result = new Result(true, 'packaging crear');
-        res.status(code.OK).json(result);
+        const newPackaging = _req.body;
+        try {
+            await this.createPackaging.execute(newPackaging);
+
+            res.status(code.OK).json(new Result(true, {
+                'mensaje': 'packaging '+ newPackaging.title + ' creado',
+            }));
+        } catch (error) {
+            res.status(code.BAD_REQUEST).json(new Result(false, {
+                'mensaje_error': 'Ocurrio un error al crear el packaging',
+            }));
+        }
     }
 
     async update(_req: Request, res: Response): Promise<void> {
-        const result = new Result(true, 'packaging actualizar');
-        res.status(code.OK).json(result);
+        const packaging_id = parseInt(_req.params.id);
+        const newPackaging = _req.body;
+
+        try {
+            await this.updatePackaging.execute(packaging_id, newPackaging);
+
+            res.status(code.OK).json(new Result(true, {
+                'mensaje': 'El packaging con el id: ' + packaging_id + ' fue actualizado.',
+            }));
+        } catch (error) {
+            res.status(code.BAD_REQUEST).json(new Result(false, {
+                'mensaje_error': 'Ocurrio un error al actualizar el packaging',
+            }));
+        }
     }
 
     async delete(_req: Request, res: Response): Promise<void> {
-        const result = new Result(true, 'packaging eliminar');
-        res.status(code.OK).json(result);
+        const packaging_id = parseInt(_req.params.id);
+        try {
+            await this.deletePackaging.execute(packaging_id);
+            res.status(code.OK).json(new Result(true, {
+                'mensaje': 'El packaging con el id: ' + packaging_id + ' fue eliminado.',
+            }));
+        } catch (error) {
+            res.status(code.BAD_REQUEST).json(new Result(false, {
+                'mensaje_error': 'Ocurrio un error al eliminar el packaging',
+            }));
+        }
     }
 }

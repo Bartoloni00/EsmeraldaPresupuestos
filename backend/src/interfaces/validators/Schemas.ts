@@ -20,7 +20,7 @@ export const IngredienteSchema = z.object({
 
 export const PackagingSchema = z.object({
     packaging_id: z.number(),
-    cantidad: z.number()
+    cantidad: z.number(),
 });
 
 export const RecetaSchema = z.object({
@@ -28,4 +28,15 @@ export const RecetaSchema = z.object({
     descripcion: z.string().nullable().optional(),
     ingredientes: z.array(IngredienteSchema).nonempty({ message: 'Debe haber al menos un ingrediente.' }),
     packagings: z.array(PackagingSchema).nonempty({ message: 'Debe haber al menos un packaging.' }),
+});
+
+const precioSchema = z.object({
+    precio: z.number(),
+    proveedor_id: z.number()
+});
+
+export const CreatePackagingSchema = z.object({
+    title: z.string().nonempty({ message: 'El nombre es obligatorio.' }),
+    descripcion: z.string().nullable().optional(),
+    precios: z.array(precioSchema).nonempty({ message: 'Debe haber al menos un precio.'}).optional(),
 });

@@ -24,7 +24,7 @@ import { PackagingRepository } from '../../../domain/repositories/PackagingRepos
             id: row.id,
             title: row.title,
             descripcion: row.descripcion,
-            precios: [priceEntry]
+            precios: row.precio !== null ? [priceEntry] : []
           });
         }
       }

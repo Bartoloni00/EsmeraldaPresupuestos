@@ -19,13 +19,13 @@ export interface Ingrediente {
 }
 
 export interface Receta {
-  id: number;
+  id?: number;
   title: string;
   descripcion?: string;
 }
 
 export interface Packaging {
-  id: number;
+  id?: number;
   title: string;
   descripcion?: string;
 }
@@ -48,7 +48,7 @@ export interface PrecioPackaging {
   packaging_id: number;
   proveedor_id: number;
   precio: number;
-  created_at: Date;
+  created_at?: Date;
 }
 
 // Relación Ingrediente - Receta
