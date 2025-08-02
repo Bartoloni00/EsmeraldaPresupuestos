@@ -2,12 +2,14 @@ import { type BaseResponse } from "./BaseResponse";
 import { type Ingrediente } from "./ingredientes";
 import { type Packagin } from "./packaging";
 
-interface IngredienteWithCantidad extends Ingrediente {
+export interface IngredienteWithCantidad extends Ingrediente {
   cantidad_kg: number;
+  multiplicador?: number;
 }
 
-interface PackagingWithCantidad extends Packagin {
+export interface PackagingWithCantidad extends Packagin {
   cantidad: number;
+  multiplicador?: number;
 }
 
 export interface Receta {
