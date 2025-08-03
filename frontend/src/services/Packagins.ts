@@ -16,3 +16,11 @@ export async function createPackaging(packaging: Packagin): Promise<Packagin> {
   });
   return response.data;
 }
+
+export async function deletePackaging(id: number): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `packagings/${id}`,
+    method: 'DELETE',
+  });
+  return response.data;
+}

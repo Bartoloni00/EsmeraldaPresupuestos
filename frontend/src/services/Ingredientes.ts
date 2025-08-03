@@ -16,3 +16,11 @@ export async function createIngrediente(ingrediente: Ingrediente): Promise<Ingre
   });
   return response.data;
 }
+
+export async function deleteIngrediente(id: number): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `ingredientes/${id}`,
+    method: 'DELETE',
+  });
+  return response.data;
+}
