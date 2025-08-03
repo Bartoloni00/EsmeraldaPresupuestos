@@ -7,3 +7,12 @@ export async function getIngredientes(id?: number): Promise<Ingrediente[]> {
   const response: BaseResponse<Ingrediente[]> = await call({ uri });
   return response.data;
 }
+
+export async function createIngrediente(ingrediente: Ingrediente): Promise<Ingrediente> {
+  const response: BaseResponse<Ingrediente> = await call({
+    uri: 'ingredientes',
+    method: 'POST',
+    body: ingrediente,
+  });
+  return response.data;
+}

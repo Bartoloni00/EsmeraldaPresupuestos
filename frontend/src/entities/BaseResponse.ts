@@ -5,5 +5,6 @@ export interface BaseResponse<T> {
 
 export interface Precios {
   precio: number;
-  proveedor_name: string;
+  proveedor_name?: string;
+  proveedor_id?: number;
 }

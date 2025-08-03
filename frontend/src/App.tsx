@@ -8,6 +8,8 @@ import PackagingDetalles from './pages/PackagingDetalles'
 import ProveedoresDetalles from './pages/ProveedoresDetalles'
 import RecetaDetalles from './pages/RecetaDetalles'
 import Navbar from './components/Navbar'
+import CreateIngrediente from './pages/CreateIngrediente'
+import CreatePackaging from './pages/CreatePackaging'
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
             <Route path="/recetas" element={<Recetas />} />
             <Route path="/proveedores" element={<Proveedores />} />
             <Route path="/insumos" element={<Insumos />} />
+            <Route path="/ingredientes/nuevo" element={<CreateIngrediente />} />
+            <Route path="/packaging/nuevo" element={<CreatePackaging />} />
             <Route path="/ingredientes/:ingrediente_id" element={<IngredientesDetalles />} />
             <Route path="/packaging/:packaging_id" element={<PackagingDetalles/>} />
             <Route path='/proveedores/:proveedor_id' element={<ProveedoresDetalles />} />

@@ -19,6 +19,20 @@ export default function Insumos() {
     <section className="p-4">
       <h1 className="text-2xl text-dark font-bold mb-4 text-center">Insumos</h1>
       <section className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+        <Link
+          to="/ingredientes/nuevo"
+          className="text-dark font-bold py-4 mb-2 w-full text-center bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors"
+        >
+          Agregar nuevo ingrediente
+        </Link>
+        <Link
+          to="/packaging/nuevo"
+          className="text-dark font-bold py-4 mb-2 w-full text-center bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors"
+        >
+          Agregar nuevo packaging
+        </Link>
+      </section>
+      <section className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <Table headerRows={['Titulo', 'Descripción', 'Ver']} data={
             ingredientes.map(ingrediente => [
               ingrediente.name, 

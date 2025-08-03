@@ -1,9 +1,9 @@
 import type { BaseResponse } from "../entities/BaseResponse";
-import type { Proveedores } from "../entities/proveedores";
+import type { Proveedor } from "../entities/proveedores";
 import { call } from "../utils/http";
 
-export async function getProveedores(id?: number): Promise<Proveedores[]> {
+export async function getProveedores(id?: number): Promise<Proveedor[]> {
   const uri = id ? `proveedores/${id}` : 'proveedores'
-  const response: BaseResponse<Proveedores[]> = await call({ uri });
+  const response: BaseResponse<Proveedor[]> = await call({ uri });
   return response.data;
 }

@@ -1,7 +1,7 @@
 import { type BaseResponse, type Precios } from "./BaseResponse";
 
 export interface Packagin {
-  id: number;
+  id?: number;
   title: string;
   descripcion: string;
   precios: Precios[];
