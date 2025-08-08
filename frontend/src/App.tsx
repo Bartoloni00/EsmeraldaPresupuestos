@@ -1,17 +1,22 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Recetas from './pages/Recetas'
-import Proveedores from './pages/Proveedores'
+import Recetas from './pages/recetas/Recetas'
+import Proveedores from './pages/proveedores/Proveedores'
 import Insumos from './pages/Insumos'
-import IngredientesDetalles from './pages/IngredientesDetalles'
-import PackagingDetalles from './pages/PackagingDetalles'
-import ProveedoresDetalles from './pages/ProveedoresDetalles'
-import RecetaDetalles from './pages/RecetaDetalles'
+import IngredientesDetalles from './pages/ingredientes/IngredientesDetalles'
+import PackagingDetalles from './pages/packagings/PackagingDetalles'
+import ProveedoresDetalles from './pages/proveedores/ProveedoresDetalles'
+import RecetaDetalles from './pages/recetas/RecetaDetalles'
 import Navbar from './components/Navbar'
-import CreateIngrediente from './pages/CreateIngrediente'
-import CreatePackaging from './pages/CreatePackaging'
-import CreateReceta from './pages/CreateReceta'
-import CreateProveedor from './pages/CreateProveedor'
+import CreateIngrediente from './pages/ingredientes/CreateIngrediente'
+import CreatePackaging from './pages/packagings/CreatePackaging'
+import CreateReceta from './pages/recetas/CreateReceta'
+import CreateProveedor from './pages/proveedores/CreateProveedor'
+
+import UpdatePackaging from './pages/packagings/UpdatePackaging'
+import UpdateProveedor from './pages/proveedores/UpdateProveedor'
+import UpdateIngrediente from './pages/ingredientes/UpdateIngrediente'
+import UpdateReceta from './pages/recetas/UpdateReceta.tsx'
 
 function App() {
   return (
@@ -31,6 +36,10 @@ function App() {
             <Route path='/proveedores/:proveedor_id' element={<ProveedoresDetalles />} />
             <Route path="/recetas/nuevo" element={<CreateReceta />} />
             <Route path="/recetas/:receta_id" element={<RecetaDetalles />} />
+            <Route path="/packaging/:packaging_id/update" element={<UpdatePackaging />} />
+            <Route path="/proveedores/:proveedor_id/update" element={<UpdateProveedor />} />
+            <Route path="/ingredientes/:ingrediente_id/update" element={<UpdateIngrediente />} />
+            <Route path="/recetas/:receta_id/update" element={<UpdateReceta />} />
           </Routes>
       </main>
     </>

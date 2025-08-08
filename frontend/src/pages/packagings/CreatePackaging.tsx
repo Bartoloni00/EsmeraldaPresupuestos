@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import type { Packagin } from '../entities/packaging'
-import type { Proveedor } from '../entities/proveedores'
-import { getProveedores } from '../services/Proveedores'
-import { createPackaging } from '../services/Packagins'
+import type { Packagin } from '../../entities/packaging'
+import type { Proveedor } from '../../entities/proveedores'
+import { getProveedores } from '../../services/Proveedores'
+import { createPackaging } from '../../services/Packagins'
 import { useNavigate } from 'react-router-dom'
 
 export default function CreatePackaging() {

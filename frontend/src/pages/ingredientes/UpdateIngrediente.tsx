@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
-import type { Ingrediente } from '../entities/ingredientes'
-import type { Proveedor } from '../entities/proveedores'
-import { getProveedores } from '../services/Proveedores'
-import { createIngrediente } from '../services/Ingredientes'
-import { useNavigate } from 'react-router-dom'
+import type { Ingrediente } from '../../entities/ingredientes'
+import type { Proveedor } from '../../entities/proveedores'
+import { getProveedores } from '../../services/Proveedores'
+import { updateIngrediente, getIngredientes } from '../../services/Ingredientes'
+import { useNavigate, useParams } from 'react-router-dom'
 
-export default function CreateIngrediente() {
+export default function UpdateIngrediente() {
   const navigate = useNavigate()
+  const { ingrediente_id } = useParams<{ ingrediente_id: string }>()
 
   const [errors, setErrors] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
   const [ingrediente, setIngrediente] = useState<Ingrediente>({
     name: '',
     descripcion: '',
@@ -18,8 +20,25 @@ export default function CreateIngrediente() {
   const [proveedores, setProveedores] = useState<Proveedor[]>([])
 
   useEffect(() => {
-    getProveedores().then(proveedores => setProveedores(proveedores))
-  }, [])
+    if (!ingrediente_id) {
+      navigate('/insumos')
+      return
+    }
+
+    Promise.all([
+      getIngredientes(parseInt(ingrediente_id)),
+      getProveedores()
+    ])
+    .then(([ingredienteData, proveedoresData]) => {
+      setIngrediente(ingredienteData [0] ?? null)
+      setProveedores(proveedoresData)
+      setLoading(false)
+    })
+    .catch(() => {
+      setErrors(['Error cargando los datos del ingrediente.'])
+      setLoading(false)
+    })
+  }, [ingrediente_id, navigate])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setIngrediente(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -32,8 +51,7 @@ export default function CreateIngrediente() {
   }
 
   const addPrecio = () => {
-    if (proveedores.length < 1) return ;
-    ingrediente.precios.find(p => p.proveedor_id === proveedores[0]?.id || 0)
+    if (proveedores.length < 1) return
     setIngrediente(prev => ({
       ...prev,
       precios: [...prev.precios, { precio: 0, proveedor_id: proveedores[0]?.id || 0 }]
@@ -47,34 +65,42 @@ export default function CreateIngrediente() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    createIngrediente(ingrediente)
-  .then(() => navigate('/insumos'))
-  .catch(async (error) => {
-    try {
-      if (error?.data) {
-        const fieldErrors = Object.values(error.data)
-          .flatMap((field: any) => field._errors ?? [])
-          .filter((e) => typeof e === 'string' && e.trim() !== '');
+    if (!ingrediente_id) return
 
-        setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.']);
-      } else {
-        setErrors(['Error en la respuesta del servidor.']);
-      }
-  
-    } catch {
-      setErrors(['No se pudo conectar con el servidor.']);
-    }
-  });
+    updateIngrediente(parseInt(ingrediente_id), ingrediente)
+      .then(() => navigate('/insumos'))
+      .catch(async (error) => {
+        try {
+          if (error?.data) {
+            const fieldErrors = Object.values(error.data)
+              .flatMap((field: any) => field._errors ?? [])
+              .filter((e) => typeof e === 'string' && e.trim() !== '')
+
+            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.'])
+          } else {
+            setErrors(['Error en la respuesta del servidor.'])
+          }
+        } catch {
+          setErrors(['No se pudo conectar con el servidor.'])
+        }
+      })
+  }
+
+  if (loading) {
+    return (
+      <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg">
+        <div className="text-center">Cargando...</div>
+      </section>
+    )
   }
 
   return (
-    <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg ">
+    <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg">
       <h1 className="text-3xl font-bold text-center text-dark mb-6">
-        Agregar nuevo ingrediente
+        Editar ingrediente
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Nombre
@@ -114,23 +140,23 @@ export default function CreateIngrediente() {
                 onChange={(e) => handlePrecioChange(index, 'precio', e.target.value)}
                 placeholder="Precio"
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          <select
-            value={item.proveedor_id}
-            onChange={(e) => handlePrecioChange(index, 'proveedor_id', e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
-          >
-            {proveedores
-            .filter(p => {
-              const yaSeleccionadoEnOtro =
-                ingrediente.precios.some((precio, i) => i !== index && precio.proveedor_id === p.id)
-              const esElActual = p.id === item.proveedor_id
-              return !yaSeleccionadoEnOtro || esElActual
-            })
-            .map(p => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
+              />
+              <select
+                value={item.proveedor_id}
+                onChange={(e) => handlePrecioChange(index, 'proveedor_id', e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                {proveedores
+                  .filter(p => {
+                    const yaSeleccionadoEnOtro =
+                      ingrediente.precios.some((precio, i) => i !== index && precio.proveedor_id === p.id)
+                    const esElActual = p.id === item.proveedor_id
+                    return !yaSeleccionadoEnOtro || esElActual
+                  })
+                  .map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+              </select>
               <button
                 type="button"
                 onClick={() => removePrecio(index)}
@@ -149,6 +175,7 @@ export default function CreateIngrediente() {
             + Agregar precio
           </button>
         </div>
+
         {errors.length > 0 && (
           <div className="bg-red-100 border border-red-400 text-red-700 p-4 rounded mb-4">
             <ul className="list-disc pl-5 space-y-1">
@@ -164,7 +191,7 @@ export default function CreateIngrediente() {
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition"
           >
-            Crear Ingrediente
+            Actualizar Ingrediente
           </button>
         </div>
       </form>

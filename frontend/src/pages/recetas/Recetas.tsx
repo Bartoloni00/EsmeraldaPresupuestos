@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getRecetas } from '../services/Recetas'
-import type { Receta } from '../entities/recetas'
-import Table from '../components/Table'
+import { getRecetas } from '../../services/Recetas'
+import type { Receta } from '../../entities/recetas'
+import Table from '../../components/Table'
 import { Link } from 'react-router-dom'
 
 export default function Recetas() {

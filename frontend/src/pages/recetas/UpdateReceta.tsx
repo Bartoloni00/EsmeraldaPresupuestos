@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { createReceta } from '../services/Recetas'
-import { getPackagings } from '../services/Packagins'
-import { getIngredientes } from '../services/Ingredientes'
-import { useNavigate } from 'react-router-dom'
-import type { CreateReceta, IngredienteReceta, PackagingReceta } from '../entities/recetas'
+import { updateReceta, getRecetas } from '../../services/Recetas'
+import { getPackagings } from '../../services/Packagins'
+import { getIngredientes } from '../../services/Ingredientes'
+import { useNavigate, useParams } from 'react-router-dom'
+import type { CreateReceta, IngredienteReceta, PackagingReceta } from '../../entities/recetas'
 
 interface IngredienteOption {
   id: number;
@@ -15,9 +15,11 @@ interface PackagingOption {
   title: string;
 }
 
-export default function CreateReceta() {
+export default function UpdateReceta() {
   const navigate = useNavigate()
+  const { receta_id } = useParams<{ receta_id: string }>()
   const [errors, setErrors] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   const [ingredientesList, setIngredientesList] = useState<IngredienteOption[]>([])
   const [packagingsList, setPackagingsList] = useState<PackagingOption[]>([])
@@ -30,13 +32,27 @@ export default function CreateReceta() {
   })
 
   useEffect(() => {
-    Promise.all([getIngredientes(), getPackagings()])
-      .then(([ingredientesRes, packagingsRes]) => {
+    if (!receta_id) {
+      navigate('/recetas')
+      return
+    }
+
+    Promise.all([
+      getRecetas(parseInt(receta_id)),
+      getIngredientes(),
+      getPackagings()
+    ])
+      .then(([recetaData, ingredientesRes, packagingsRes]) => {
+        setReceta(recetaData)
         setIngredientesList(ingredientesRes)
         setPackagingsList(packagingsRes)
+        setLoading(false)
       })
-      .catch(() => setErrors(['Error cargando ingredientes o packagings.']))
-  }, [])
+      .catch(() => {
+        setErrors(['Error cargando los datos de la receta.'])
+        setLoading(false)
+      })
+  }, [receta_id, navigate])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setReceta(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -84,7 +100,9 @@ export default function CreateReceta() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createReceta(receta)
+    if (!receta_id) return
+
+    updateReceta(parseInt(receta_id), receta)
       .then(() => navigate('/recetas'))
       .catch(async (error) => {
         try {
@@ -102,14 +120,21 @@ export default function CreateReceta() {
       })
   }
 
+  if (loading) {
+    return (
+      <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg">
+        <div className="text-center">Cargando...</div>
+      </section>
+    )
+  }
+
   return (
     <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg">
       <h1 className="text-3xl font-bold text-center text-dark mb-6">
-        Crear nueva receta
+        Editar receta
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        
         {/* Título */}
         <div>
           <label className="block text-sm font-medium text-gray-700">Título</label>
@@ -135,6 +160,8 @@ export default function CreateReceta() {
         </div>
 
         {/* Ingredientes */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Ingredientes</label>
           {receta.ingredientes.map((ing, index) => (
             <div key={index} className="flex gap-3 mb-2 items-center">
               <select
@@ -167,54 +194,57 @@ export default function CreateReceta() {
               <button type="button" onClick={() => removeIngrediente(index)} className="text-red-500 text-xl">&times;</button>
             </div>
           ))}
-        <button
+          <button
             type="button"
             onClick={addIngrediente}
             className="mt-2 text-sm text-emerald-600 hover:underline hover:cursor-pointer block"
           >
             + Agregar ingrediente
-        </button>
+          </button>
+        </div>
 
         {/* Packagings */}
-        {receta.packagings.map((pack, index) => (
-          <div key={index} className="flex gap-3 mb-2 items-center">
-            <select
-              value={pack.packaging_id}
-              onChange={(e) => handlePackagingChange(index, 'packaging_id', e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
-            >
-              <option value={0}>Seleccione packaging</option>
-              {packagingsList
-                .filter(opt => {
-                  const yaSeleccionadoEnOtro = receta.packagings
-                    .some((otro, i) => i !== index && otro.packaging_id === opt.id)
-                  const esElActual = opt.id === pack.packaging_id
-                  return !yaSeleccionadoEnOtro || esElActual
-                })
-                .map(opt => (
-                  <option key={opt.id} value={opt.id}>{opt.title}</option>
-                ))}
-            </select>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Packagings</label>
+          {receta.packagings.map((pack, index) => (
+            <div key={index} className="flex gap-3 mb-2 items-center">
+              <select
+                value={pack.packaging_id}
+                onChange={(e) => handlePackagingChange(index, 'packaging_id', e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value={0}>Seleccione packaging</option>
+                {packagingsList
+                  .filter(opt => {
+                    const yaSeleccionadoEnOtro = receta.packagings
+                      .some((otro, i) => i !== index && otro.packaging_id === opt.id)
+                    const esElActual = opt.id === pack.packaging_id
+                    return !yaSeleccionadoEnOtro || esElActual
+                  })
+                  .map(opt => (
+                    <option key={opt.id} value={opt.id}>{opt.title}</option>
+                  ))}
+              </select>
 
-            <input
-              type="number"
-              placeholder="Cantidad"
-              value={pack.cantidad}
-              onChange={(e) => handlePackagingChange(index, 'cantidad', e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
-            />
+              <input
+                type="number"
+                placeholder="Cantidad"
+                value={pack.cantidad}
+                onChange={(e) => handlePackagingChange(index, 'cantidad', e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
+              />
 
-            <button type="button" onClick={() => removePackaging(index)} className="text-red-500 text-xl">&times;</button>
-          </div>
-        ))}
-       <button
+              <button type="button" onClick={() => removePackaging(index)} className="text-red-500 text-xl">&times;</button>
+            </div>
+          ))}
+          <button
             type="button"
             onClick={addPackaging}
             className="mt-2 text-sm text-emerald-600 hover:underline hover:cursor-pointer block"
           >
             + Agregar packaging
-        </button>
-
+          </button>
+        </div>
 
         {/* Errores */}
         {errors.length > 0 && (
@@ -231,7 +261,7 @@ export default function CreateReceta() {
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition"
           >
-            Crear receta
+            Actualizar receta
           </button>
         </div>
       </form>

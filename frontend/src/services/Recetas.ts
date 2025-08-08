@@ -25,3 +25,13 @@ export async function deleteReceta(id: number): Promise<void> {
   
   return response.data;
 }
+
+export async function updateReceta(id: number, receta: CreateReceta): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `recetas/${id}`,
+    method: 'PUT',
+    body: receta,
+  });
+  
+  return response.data;
+}

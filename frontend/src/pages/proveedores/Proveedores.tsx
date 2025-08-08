@@ -1,6 +1,6 @@
-import Table from "../components/Table";
+import Table from "../../components/Table";
 import { useEffect, useState } from "react";
-import { getProveedores } from "../services/Proveedores";
+import { getProveedores } from "../../services/Proveedores";
 import { Link } from "react-router-dom";
 
 export default function Proveedores() {

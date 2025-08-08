@@ -24,3 +24,12 @@ export async function deletePackaging(id: number): Promise<void> {
   });
   return response.data;
 }
+
+export async function updatePackaging(id: number, packaging: Packagin): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `packagings/${id}`,
+    method: 'PUT',
+    body: packaging,
+  });
+  return response.data;
+}

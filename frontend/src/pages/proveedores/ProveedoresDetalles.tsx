@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getProveedores, deleteProveedor } from '../services/Proveedores'
-import type { Proveedor } from '../entities/proveedores'
+import { getProveedores, deleteProveedor } from '../../services/Proveedores'
+import type { Proveedor } from '../../entities/proveedores'
 import {
   Mail,
   Phone,
@@ -10,6 +10,7 @@ import {
   Building2,
   Trash
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function ProveedorDetalle() {
   const navigate = useNavigate()
@@ -100,10 +101,14 @@ export default function ProveedorDetalle() {
         )}
       </ul>
       <div className="mt-6 flex justify-center flex-col gap-4">
-        <button onClick={handleShowDeleteButton} className="bg-red-400 text-dark font-bold py-2 px-4 rounded-lg shadow-md transition-colors hover:bg-red-500 hover:cursor-pointer">
-          Eliminar proveedor
-        </button>
-
+        <div className='flex items-center justify-center gap-4'>
+        <Link to={`/proveedores/${proveedor.id}/update`} className="bg-yellow-400 text-dark font-bold py-2 px-4 rounded-lg shadow-md transition-colors hover:bg-yellow-500 hover:cursor-pointer">
+            Editar packaging
+          </Link>
+          <button onClick={handleShowDeleteButton} className="bg-red-400 text-dark font-bold py-2 px-4 rounded-lg shadow-md transition-colors hover:bg-red-500 hover:cursor-pointer">
+            Eliminar packaging
+          </button>
+        </div>
         {mostrarConfirmDelete && (
           <div className='w-full shadow-lg bg-red-100 p-4 rounded-lg'>
             <div className='flex items-center justify-center gap-2 text-red-700 font-semibold text-lg mb-2 text-center w-full'>

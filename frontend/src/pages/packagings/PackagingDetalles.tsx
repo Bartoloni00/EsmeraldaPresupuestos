@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getPackagings, deletePackaging } from '../services/Packagins'
+import { getPackagings, deletePackaging } from '../../services/Packagins'
 import { useNavigate } from 'react-router-dom'
-import type { Packagin } from '../entities/packaging'
+import type { Packagin } from '../../entities/packaging'
 import {Trash} from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export type borrar = boolean
 
@@ -88,9 +89,14 @@ export default function PackagingDetalle() {
       </ul>
 
       <div className="mt-6 flex justify-center flex-col gap-4">
-        <button onClick={handleShowDeleteButton} className="bg-red-400 text-dark font-bold py-2 px-4 rounded-lg shadow-md transition-colors hover:bg-red-500 hover:cursor-pointer">
-          Eliminar packaging
-        </button>
+        <div className='flex items-center justify-center gap-4'>
+          <Link to={`/packaging/${packaging.id}/update`} className="bg-yellow-400 text-dark font-bold py-2 px-4 rounded-lg shadow-md transition-colors hover:bg-yellow-500 hover:cursor-pointer">
+            Editar packaging
+          </Link>
+          <button onClick={handleShowDeleteButton} className="bg-red-400 text-dark font-bold py-2 px-4 rounded-lg shadow-md transition-colors hover:bg-red-500 hover:cursor-pointer">
+            Eliminar packaging
+          </button>
+        </div>
         {mostrarConfirmDelete && (
           <div className='w-full shadow-lg bg-red-100 p-4 rounded-lg'>
             <div className='flex items-center justify-center gap-2 text-red-700 font-semibold text-lg mb-2 text-center w-full'>

@@ -26,3 +26,13 @@ export async function deleteProveedor(id: number): Promise<void> {
   
   return response.data;
 }
+
+export async function updateProveedor(id: number, proveedor: Proveedor): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `proveedores/${id}`,
+    method: 'PUT',
+    body: proveedor,
+  });
+  
+  return response.data;
+}

@@ -24,3 +24,12 @@ export async function deleteIngrediente(id: number): Promise<void> {
   });
   return response.data;
 }
+
+export async function updateIngrediente(id: number, ingrediente: Ingrediente): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `ingredientes/${id}`,
+    method: 'PUT',
+    body: ingrediente,
+  });
+  return response.data;
+}

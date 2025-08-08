@@ -1,13 +1,15 @@
-import { useState } from 'react'
-import type { Proveedor } from '../entities/proveedores'
-import { createProveedor } from '../services/Proveedores'
-import { useNavigate } from 'react-router-dom'
-import BaseInput from '../components/BaseInput'
+import { useState, useEffect } from 'react'
+import type { Proveedor } from '../../entities/proveedores'
+import { updateProveedor, getProveedores } from '../../services/Proveedores'
+import { useNavigate, useParams } from 'react-router-dom'
+import BaseInput from '../../components/BaseInput'
 
-export default function CreateProveedor() {
+export default function UpdateProveedor() {
   const navigate = useNavigate()
+  const { proveedor_id } = useParams<{ proveedor_id: string }>()
 
   const [errors, setErrors] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
   const [proveedor, setProveedor] = useState<Proveedor>({
     name: '',
     descripcion: '',
@@ -21,49 +23,74 @@ export default function CreateProveedor() {
     numero_calle: '',
   })
 
-const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  const { name, value, type } = e.target
+  useEffect(() => {
+    if (!proveedor_id) {
+      navigate('/proveedores')
+      return
+    }
 
-  setProveedor(prev => ({
-    ...prev,
-    [name]: type === 'number'
-      ? value === ''
-        ? ''
-        : Number(value)
-      : value
-  }))
-}
+    getProveedores(parseInt(proveedor_id))
+      .then(proveedorData => {
+        setProveedor(proveedorData[0] ?? null)
+        setLoading(false)
+      })
+      .catch(() => {
+        setErrors(['Error cargando los datos del proveedor.'])
+        setLoading(false)
+      })
+  }, [proveedor_id, navigate])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target
+
+    setProveedor(prev => ({
+      ...prev,
+      [name]: type === 'number'
+        ? value === ''
+          ? ''
+          : Number(value)
+        : value
+    }))
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    createProveedor(proveedor)
-  .then(() => navigate('/proveedores'))
-  .catch(async (error) => {
-    try {
-      if (error?.data) {
-        const fieldErrors = Object.values(error.data)
-          .flatMap((field: any) => field._errors ?? [])
-          .filter((e) => typeof e === 'string' && e.trim() !== '');
-        console.log(error)
+    if (!proveedor_id) return
 
-        setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.']);
-      } else {
-        setErrors(['Error en la respuesta del servidor.']);
-      }
-    } catch {
-      setErrors(['No se pudo conectar con el servidor.']);
-    }
-  });
+    updateProveedor(parseInt(proveedor_id), proveedor)
+      .then(() => navigate('/proveedores'))
+      .catch(async (error) => {
+        try {
+          if (error?.data) {
+            const fieldErrors = Object.values(error.data)
+              .flatMap((field: any) => field._errors ?? [])
+              .filter((e) => typeof e === 'string' && e.trim() !== '')
+
+            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.'])
+          } else {
+            setErrors(['Error en la respuesta del servidor.'])
+          }
+        } catch {
+          setErrors(['No se pudo conectar con el servidor.'])
+        }
+      })
+  }
+
+  if (loading) {
+    return (
+      <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg">
+        <div className="text-center">Cargando...</div>
+      </section>
+    )
   }
 
   return (
-    <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg ">
+    <section className="p-6 max-w-2xl mx-auto bg-cream rounded-2xl shadow-lg">
       <h1 className="text-3xl font-bold text-center text-dark mb-6">
-        Agregar nuevo proveedor
+        Editar proveedor
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-
         <BaseInput
           label="Nombre"
           name="name"
@@ -86,7 +113,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         </div>
 
         <BaseInput
-          label=" Teléfono"
+          label="Teléfono"
           name="telefono"
           value={proveedor.telefono}
           onChange={handleChange}
@@ -172,7 +199,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition"
           >
-            Agregar proveedor
+            Actualizar proveedor
           </button>
         </div>
       </form>
