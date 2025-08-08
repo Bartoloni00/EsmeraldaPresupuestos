@@ -51,7 +51,7 @@ export default function Home() {
       {section === 'recetas' ? (
         <RecetaPresupuestoSection recetas={recetas} />
       ) : (
-        <InsumosPresupuestoSection ingredientes={ingredientes} packagings={packagings} />
+        <InsumosPresupuestoSection ingredientes={ingredientes} packagings={packagings} recetas={recetas} />
       )}
     </section>
   )
