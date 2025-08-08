@@ -16,3 +16,12 @@ export async function createReceta(receta: CreateReceta): Promise<Receta> {
   });
   return response.data;
 }
+
+export async function deleteReceta(id: number): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `recetas/${id}`,
+    method: 'DELETE',
+  });
+  
+  return response.data;
+}

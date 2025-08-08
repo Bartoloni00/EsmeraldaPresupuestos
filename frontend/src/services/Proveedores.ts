@@ -17,3 +17,12 @@ export async function createProveedor(proveedor: Proveedor): Promise<Proveedor> 
   
   return response.data;
 }
+
+export async function deleteProveedor(id: number): Promise<void> {
+  const response: BaseResponse<void> = await call({
+    uri: `proveedores/${id}`,
+    method: 'DELETE',
+  });
+  
+  return response.data;
+}
