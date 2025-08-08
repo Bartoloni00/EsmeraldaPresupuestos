@@ -10,8 +10,14 @@ export default function Proveedores() {
     getProveedores().then(proveedores => setProveedores(proveedores))
   }, [])
   return (
-    <section className="p-4">
+    <section className="p-4 flex flex-col">
       <h1 className="text-2xl text-dark font-bold mb-4 text-center">Lista de Proveedores</h1>
+      <Link
+        to="/proveedores/nuevo"
+        className="text-dark font-bold py-4 mb-2 w-full text-center bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors"
+      >
+        Agregar nuevo proveedor
+      </Link>
       <Table headerRows={["Nombre", "Descripción", "Teléfono", "Dirección", "Ver"]} data={
         proveedores.map(p => [
           p.name, 

@@ -1,7 +1,7 @@
 import { type BaseResponse } from "./BaseResponse";
 
 export interface Proveedor {
-  id: number;
+  id?: number;
   name: string;
   descripcion: string;
   telefono: string;

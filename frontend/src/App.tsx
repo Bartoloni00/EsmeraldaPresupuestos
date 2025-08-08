@@ -10,6 +10,8 @@ import RecetaDetalles from './pages/RecetaDetalles'
 import Navbar from './components/Navbar'
 import CreateIngrediente from './pages/CreateIngrediente'
 import CreatePackaging from './pages/CreatePackaging'
+import CreateReceta from './pages/CreateReceta'
+import CreateProveedor from './pages/CreateProveedor'
 
 function App() {
   return (
@@ -25,7 +27,9 @@ function App() {
             <Route path="/packaging/nuevo" element={<CreatePackaging />} />
             <Route path="/ingredientes/:ingrediente_id" element={<IngredientesDetalles />} />
             <Route path="/packaging/:packaging_id" element={<PackagingDetalles/>} />
+            <Route path='/proveedores/nuevo' element={<CreateProveedor />} />
             <Route path='/proveedores/:proveedor_id' element={<ProveedoresDetalles />} />
+            <Route path="/recetas/nuevo" element={<CreateReceta />} />
             <Route path="/recetas/:receta_id" element={<RecetaDetalles />} />
           </Routes>
       </main>

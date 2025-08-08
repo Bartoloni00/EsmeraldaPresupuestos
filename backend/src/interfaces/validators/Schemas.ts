@@ -10,7 +10,11 @@ export const ProveedorSchema = z.object({
     provincia: z.string().default('Santa Fe'),
     ciudad: z.string().default('Rosario'),
     calle: z.string().nullable().optional(),
-    numero_calle: z.number().nullable().optional()
+    numero_calle: z
+        .union([z.number(), z.string().refine(val => val === '', {
+            message: 'Debe ser un número o vacío'
+        })])
+        .optional(),
 });
 
 export const IngredienteSchema = z.object({

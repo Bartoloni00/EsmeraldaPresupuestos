@@ -13,7 +13,7 @@ export interface PackagingWithCantidad extends Packagin {
 }
 
 export interface Receta {
-  id: number;
+  id?: number;
   title: string;
   descripcion: string;
   ingredientes: IngredienteWithCantidad[];
@@ -21,3 +21,20 @@ export interface Receta {
 }
 
 export interface Recetas extends BaseResponse<Receta[]> {}
+
+export interface IngredienteReceta {
+  ingrediente_id: number;
+  cantidad_kg: number;
+}
+
+export interface PackagingReceta {
+  packaging_id: number;
+  cantidad: number;
+}
+
+export interface CreateReceta {
+  title: string;
+  descripcion: string;
+  ingredientes: IngredienteReceta[];
+  packagings: PackagingReceta[];
+}

@@ -12,8 +12,14 @@ export default function Recetas() {
   }, [])
 
   return (
-    <section className="p-4">
+    <section className="p-4 flex flex-col">
       <h1 className="text-2xl text-dark font-bold mb-4 text-center">Recetas</h1>
+      <Link
+        to="/recetas/nuevo"
+        className="text-dark font-bold py-4 mb-2 w-full text-center bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors"
+      >
+        Agregar nueva receta
+      </Link>
       <Table headerRows={['Titulo', 'Descripcion', 'Detalles']} data={
         recetas.map(receta => [
           receta.title,
