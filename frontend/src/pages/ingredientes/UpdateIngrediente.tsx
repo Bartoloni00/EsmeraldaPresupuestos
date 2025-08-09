@@ -4,6 +4,7 @@ import type { Proveedor } from '../../entities/proveedores'
 import { getProveedores } from '../../services/Proveedores'
 import { updateIngrediente, getIngredientes } from '../../services/Ingredientes'
 import { useNavigate, useParams } from 'react-router-dom'
+import { extractErrors } from '../../utils/extractErrrors'
 
 export default function UpdateIngrediente() {
   const navigate = useNavigate()
@@ -24,22 +25,30 @@ export default function UpdateIngrediente() {
       navigate('/insumos')
       return
     }
-
+  
     Promise.all([
       getIngredientes(parseInt(ingrediente_id)),
       getProveedores()
     ])
-    .then(([ingredienteData, proveedoresData]) => {
-      setIngrediente(ingredienteData [0] ?? null)
-      setProveedores(proveedoresData)
-      setLoading(false)
-    })
-    .catch(() => {
-      setErrors(['Error cargando los datos del ingrediente.'])
-      setLoading(false)
-    })
+      .then(([ingredienteData, proveedoresData]) => {
+        const ingredienteConIds = {
+          ...ingredienteData[0],
+          precios: ingredienteData[0]?.precios.map((p: any) => ({
+            precio: p.precio,
+            proveedor_id: proveedoresData.find(prov => prov.name === p.proveedor_name)?.id || 0
+          })) || []
+        }
+  
+        setIngrediente(ingredienteConIds)
+        setProveedores(proveedoresData)
+        setLoading(false)
+      })
+      .catch(() => {
+        setErrors(['Error cargando los datos del ingrediente.'])
+        setLoading(false)
+      })
   }, [ingrediente_id, navigate])
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setIngrediente(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
@@ -67,21 +76,20 @@ export default function UpdateIngrediente() {
     e.preventDefault()
     if (!ingrediente_id) return
 
+    console.log(ingrediente);
     updateIngrediente(parseInt(ingrediente_id), ingrediente)
       .then(() => navigate('/insumos'))
       .catch(async (error) => {
+        console.log(error);
         try {
           if (error?.data) {
-            const fieldErrors = Object.values(error.data)
-              .flatMap((field: any) => field._errors ?? [])
-              .filter((e) => typeof e === 'string' && e.trim() !== '')
-
-            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.'])
+            const fieldErrors = extractErrors(error.data);
+            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.']);
           } else {
-            setErrors(['Error en la respuesta del servidor.'])
+            setErrors(['Error en la respuesta del servidor.']);
           }
         } catch {
-          setErrors(['No se pudo conectar con el servidor.'])
+          setErrors(['No se pudo conectar con el servidor.']);
         }
       })
   }

@@ -4,6 +4,7 @@ import type { Proveedor } from '../../entities/proveedores'
 import { getProveedores } from '../../services/Proveedores'
 import { updatePackaging, getPackagings } from '../../services/Packagins'
 import { useNavigate, useParams } from 'react-router-dom'
+import { extractErrors } from '../../utils/extractErrrors'
 
 export default function UpdatePackaging() {
   const navigate = useNavigate()
@@ -30,7 +31,15 @@ export default function UpdatePackaging() {
       getProveedores()
     ])
     .then(([packagingData, proveedoresData]) => {
-      setPackaging(packagingData[0] ?? null)
+      const packagingConIds = {
+        ...packagingData[0],
+        precios: packagingData[0]?.precios.map((p: any) => ({
+          precio: p.precio,
+          proveedor_id: proveedoresData.find(prov => prov.name === p.proveedor_name)?.id || 0
+        })) || []
+      }
+
+      setPackaging(packagingConIds)
       setProveedores(proveedoresData)
       setLoading(false)
     })
@@ -70,20 +79,16 @@ export default function UpdatePackaging() {
     updatePackaging(parseInt(packaging_id), packaging)
       .then(() => navigate('/insumos'))
       .catch(async (error) => {
+        console.log(error);
         try {
           if (error?.data) {
-            const fieldErrors = Object.values(error.data)
-              .flatMap((field: any) => field._errors ?? [])
-              .filter((e) => typeof e === 'string' && e.trim() !== '')
-              console.log(error);
-              
-
-            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.'])
+            const fieldErrors = extractErrors(error.data);
+            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.']);
           } else {
-            setErrors(['Error en la respuesta del servidor.'])
+            setErrors(['Error en la respuesta del servidor.']);
           }
         } catch {
-          setErrors(['No se pudo conectar con el servidor.'])
+          setErrors(['No se pudo conectar con el servidor.']);
         }
       })
   }

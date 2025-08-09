@@ -35,8 +35,8 @@ export const RecetaSchema = z.object({
 });
 
 const precioSchema = z.object({
-    precio: z.number(),
-    proveedor_id: z.number()
+    precio: z.coerce.number({message:'El precio debe ser un número.' }),
+    proveedor_id: z.coerce.number({ message: 'El proveedor es obligatorio.' })
 });
 
 export const CreatePackagingSchema = z.object({
