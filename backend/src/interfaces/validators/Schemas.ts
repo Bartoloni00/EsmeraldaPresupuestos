@@ -19,12 +19,12 @@ export const ProveedorSchema = z.object({
 
 export const IngredienteSchema = z.object({
     ingrediente_id: z.number(),
-    cantidad_kg: z.number()
+    cantidad_kg: z.coerce.number({message:'La cantidad debe ser un número.' }),
 });
 
 export const PackagingSchema = z.object({
     packaging_id: z.number(),
-    cantidad: z.number(),
+    cantidad: z.coerce.number({message:'La cantidad debe ser un número.' }),
 });
 
 export const RecetaSchema = z.object({

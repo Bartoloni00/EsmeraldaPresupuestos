@@ -4,6 +4,7 @@ import { getPackagings } from '../../services/Packagins'
 import { getIngredientes } from '../../services/Ingredientes'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { CreateReceta, IngredienteReceta, PackagingReceta } from '../../entities/recetas'
+import { extractErrors } from '../../utils/extractErrrors'
 
 interface IngredienteOption {
   id: number;
@@ -36,23 +37,53 @@ export default function UpdateReceta() {
       navigate('/recetas')
       return
     }
-
+  
     Promise.all([
       getRecetas(parseInt(receta_id)),
       getIngredientes(),
       getPackagings()
     ])
-      .then(([recetaData, ingredientesRes, packagingsRes]) => {
-        setReceta(recetaData)
-        setIngredientesList(ingredientesRes)
-        setPackagingsList(packagingsRes)
-        setLoading(false)
-      })
-      .catch(() => {
-        setErrors(['Error cargando los datos de la receta.'])
-        setLoading(false)
-      })
-  }, [receta_id, navigate])
+    .then(([recetaData, ingredientesRes, packagingsRes]) => {
+      // Aquí está el cambio clave: mapeamos directamente los datos
+      const mappedIngredientes: IngredienteReceta[] = recetaData[0]?.ingredientes.map(ing => ({
+        ingrediente_id: ing.id ?? 0,
+        cantidad_kg: ing.cantidad_kg
+      })) || [];
+
+      const mappedPackagings = recetaData[0]?.packagings.map(pack => ({
+        packaging_id: pack.id ?? 0,
+        cantidad: pack.cantidad
+      })) || [];
+  
+      setReceta({
+        title: recetaData[0]?.title ?? '',
+        descripcion: recetaData[0]?.descripcion ?? '',
+        ingredientes: mappedIngredientes,
+        packagings: mappedPackagings
+      });
+      setIngredientesList(
+        ingredientesRes
+          .filter((ing): ing is typeof ing & { id: number } => ing.id !== undefined)
+          .map(ing => ({
+            id: ing.id,
+            name: ing.name
+          }))
+      );
+      setPackagingsList(
+        packagingsRes
+          .filter((pack): pack is typeof pack & { id: number } => pack.id !== undefined)
+          .map(pack => ({
+            id: pack.id,
+            title: pack.title
+          }))
+      );
+      setLoading(false);
+    })
+    .catch(() => {
+      setErrors(['Error cargando los datos de la receta.'])
+      setLoading(false)
+    });
+  }, [receta_id, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setReceta(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -60,16 +91,22 @@ export default function UpdateReceta() {
 
   const handleIngredienteChange = (index: number, field: keyof IngredienteReceta, value: string | number) => {
     const updated = [...receta.ingredientes]
-    updated[index] = { ...updated[index], [field]: field === 'ingrediente_id' ? Number(value) : parseFloat(String(value)) }
+    updated[index] = {
+      ...updated[index],
+      [field]: field === 'ingrediente_id' ? Number(value) : parseFloat(String(value))
+    }
     setReceta(prev => ({ ...prev, ingredientes: updated }))
   }
-
+  
   const handlePackagingChange = (index: number, field: keyof PackagingReceta, value: string | number) => {
     const updated = [...receta.packagings]
-    updated[index] = { ...updated[index], [field]: Number(value) }
+    updated[index] = {
+      ...updated[index],
+      [field]: field === 'packaging_id' ? Number(value) : Number(value)
+    }
     setReceta(prev => ({ ...prev, packagings: updated }))
   }
-
+  
   const addIngrediente = () => {
     setReceta(prev => ({
       ...prev,
@@ -105,17 +142,16 @@ export default function UpdateReceta() {
     updateReceta(parseInt(receta_id), receta)
       .then(() => navigate('/recetas'))
       .catch(async (error) => {
+        console.log(error);
         try {
           if (error?.data) {
-            const fieldErrors = Object.values(error.data)
-              .flatMap((field: any) => field._errors ?? [])
-              .filter((e) => typeof e === 'string' && e.trim() !== '')
-            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.'])
+            const fieldErrors = extractErrors(error.data);
+            setErrors(fieldErrors.length ? fieldErrors : ['Ocurrió un error desconocido.']);
           } else {
-            setErrors(['Error en la respuesta del servidor.'])
+            setErrors(['Error en la respuesta del servidor.']);
           }
         } catch {
-          setErrors(['No se pudo conectar con el servidor.'])
+          setErrors(['No se pudo conectar con el servidor.']);
         }
       })
   }
@@ -166,11 +202,12 @@ export default function UpdateReceta() {
             <div key={index} className="flex gap-3 mb-2 items-center">
               <select
                 value={ing.ingrediente_id}
-                onChange={(e) => handleIngredienteChange(index, 'ingrediente_id', e.target.value)}
+                onChange={(e) => handleIngredienteChange(index, 'ingrediente_id', Number(e.target.value))}
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value={0}>Seleccione ingrediente</option>
-                {ingredientesList
+                {
+                ingredientesList
                   .filter(opt => {
                     const yaSeleccionadoEnOtro = receta.ingredientes
                       .some((otro, i) => i !== index && otro.ingrediente_id === opt.id)
@@ -187,7 +224,7 @@ export default function UpdateReceta() {
                 step="0.001"
                 placeholder="Cantidad (kg)"
                 value={ing.cantidad_kg}
-                onChange={(e) => handleIngredienteChange(index, 'cantidad_kg', e.target.value)}
+                onChange={(e) => handleIngredienteChange(index, 'cantidad_kg', Number(e.target.value))}
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
               />
 
@@ -210,7 +247,7 @@ export default function UpdateReceta() {
             <div key={index} className="flex gap-3 mb-2 items-center">
               <select
                 value={pack.packaging_id}
-                onChange={(e) => handlePackagingChange(index, 'packaging_id', e.target.value)}
+                onChange={(e) => handlePackagingChange(index, 'packaging_id', Number(e.target.value))}
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value={0}>Seleccione packaging</option>
@@ -222,15 +259,18 @@ export default function UpdateReceta() {
                     return !yaSeleccionadoEnOtro || esElActual
                   })
                   .map(opt => (
-                    <option key={opt.id} value={opt.id}>{opt.title}</option>
-                  ))}
+                    <option key={opt.id} value={opt.id}>
+                      {opt.title}
+                    </option>
+                  ))
+                }
               </select>
 
               <input
                 type="number"
                 placeholder="Cantidad"
                 value={pack.cantidad}
-                onChange={(e) => handlePackagingChange(index, 'cantidad', e.target.value)}
+                onChange={(e) => handlePackagingChange(index, 'cantidad', Number(e.target.value))}
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 text-dark p-2.5 focus:ring-emerald-500 focus:border-emerald-500"
               />
 

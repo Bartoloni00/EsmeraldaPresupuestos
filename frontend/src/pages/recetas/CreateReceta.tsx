@@ -32,8 +32,22 @@ export default function CreateReceta() {
   useEffect(() => {
     Promise.all([getIngredientes(), getPackagings()])
       .then(([ingredientesRes, packagingsRes]) => {
-        setIngredientesList(ingredientesRes)
-        setPackagingsList(packagingsRes)
+        setIngredientesList(
+          ingredientesRes
+            .filter((ing): ing is typeof ing & { id: number } => ing.id !== undefined)
+            .map(ing => ({
+              id: ing.id,
+              name: ing.name
+            }))
+        )
+        setPackagingsList(
+          packagingsRes
+            .filter((pack): pack is typeof pack & { id: number } => pack.id !== undefined)
+            .map(pack => ({
+              id: pack.id,
+              title: pack.title
+            }))
+        )
       })
       .catch(() => setErrors(['Error cargando ingredientes o packagings.']))
   }, [])

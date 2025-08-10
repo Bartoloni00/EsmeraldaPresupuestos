@@ -1,3 +1,4 @@
+import type { Ingrediente } from './IngredienteCard'
 import type { Receta } from '../entities/recetas'
 import { useState, useEffect } from 'react'
 import RecetaSelector from './RecetaSelector'
@@ -30,23 +31,27 @@ export default function RecetaPresupuestoSection({recetas}: {recetas: Receta[]})
         if (selectedReceta) {
             const newIngredientePresupuesto: Record<number, IngredientePresupuesto> = {}
             selectedReceta.ingredientes.forEach(ingrediente => {
-                newIngredientePresupuesto[ingrediente.id] = {
-                    id: ingrediente.id,
-                    proveedorSeleccionado: null,
-                    precioSeleccionado: null,
-                    multiplicador: ingrediente.multiplicador || 1,
-                    subtotal: 0
+                if (ingrediente.id !== undefined) {
+                    newIngredientePresupuesto[ingrediente.id] = {
+                        id: ingrediente.id,
+                        proveedorSeleccionado: null,
+                        precioSeleccionado: null,
+                        multiplicador: ingrediente.multiplicador || 1,
+                        subtotal: 0
+                    }
                 }
                 setIngredientePresupuesto(newIngredientePresupuesto)
 
                 const newPackagingPresupuesto: Record<number, PackagingPresupuesto> = {}
                 selectedReceta.packagings.forEach(packaging => {
-                    newPackagingPresupuesto[packaging.id] = {
-                        id: packaging.id,
-                        proveedorSelecionado: null,
-                        precioSelecionado: null,
-                        multiplicador: packaging.multiplicador || 1,
-                        subtotal: 0
+                    if (packaging.id !== undefined) {
+                        newPackagingPresupuesto[packaging.id] = {
+                            id: packaging.id,
+                            proveedorSelecionado: null,
+                            precioSelecionado: null,
+                            multiplicador: packaging.multiplicador || 1,
+                            subtotal: 0
+                        }
                     }
                     setPackagingPresupuesto(newPackagingPresupuesto)
                 })
@@ -153,7 +158,7 @@ export default function RecetaPresupuestoSection({recetas}: {recetas: Receta[]})
        {selectedReceta && (
         <>
             <IngredienteSection
-                ingredientes={selectedReceta.ingredientes}
+                ingredientes={selectedReceta.ingredientes as Ingrediente[]}
                 ingredientePresupuesto={ingredientePresupuesto}
                 onIngredientePrecioChange={handleIngredientePrecioChange}
                 onIngredienteMultiplicadorChange={handleIngredienteMultiplicadorChange}

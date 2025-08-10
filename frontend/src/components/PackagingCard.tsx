@@ -34,7 +34,7 @@ export default function PackagingCard({packaging, presupuesto, onPrecioChange, o
                         onChange={e => {
                             const precio = packaging.precios.find(precio => precio.proveedor_name === e.target.value)
                             if (precio) {
-                                onPrecioChange(packaging.id, e.target.value, precio.precio)
+                                onPrecioChange(packaging.id ?? 0, e.target.value, precio.precio)
                             }
                         }}>
                         <option value="default">Selecciona un proveedor</option>
@@ -53,7 +53,7 @@ export default function PackagingCard({packaging, presupuesto, onPrecioChange, o
                         id="multiplicador" 
                         className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-emerald-600 focus:border-emerald-600 sm:text-sm max-w-xs"
                         value={presupuesto?.multiplicador || 1}
-                        onChange={e => onMultiplicadorChange(packaging.id, parseFloat(e.target.value) || 0)}
+                        onChange={e => onMultiplicadorChange(packaging.id ?? 0, parseFloat(e.target.value) || 0)}
                         />
                 </div>
                 {

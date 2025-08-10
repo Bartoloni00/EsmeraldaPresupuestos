@@ -42,7 +42,7 @@ export default function IngredienteCard({ingrediente, presupuesto, onPrecioChang
                     onChange={e => {
                         const precio = ingrediente.precios.find(p => p.proveedor_name === e.target.value)
                         if (precio) {
-                            onPrecioChange(ingrediente.id, precio.proveedor_name, precio.precio)
+                            onPrecioChange(ingrediente.id, precio.proveedor_name ?? null, precio.precio)
                         }
                     }}>
                         <option value="">Seleccionar un proveedor</option>

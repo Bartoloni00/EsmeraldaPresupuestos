@@ -27,7 +27,7 @@ export default function PackagingSection({packagings, packagingPresupuesto, onPa
                         <PackagingCard 
                             key={packaging.id} 
                             packaging={packaging} 
-                            presupuesto={packagingPresupuesto[packaging.id]} 
+                            presupuesto={packagingPresupuesto[packaging.id ?? 0]} 
                             onPrecioChange={onPackagingPrecioChange} 
                             onMultiplicadorChange={onPackagingMultiplicadorChange} 
                             formatCurrency={formatCurrency}
